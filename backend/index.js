@@ -1,4 +1,4 @@
-import 'express-async-errors';       // auto-catch async errors
+import 'express-async-errors'; 
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
@@ -14,16 +14,15 @@ const app = express();
 app.use(cors({ origin: 'http://localhost:5173' }));
 app.use(express.json());
 
-// Mount routes
+//routes
 app.use('/api/auth', authRoutes);
 app.use('/api/wishlist', wishlistRoutes);
 
-// 404 handler
 app.use((req, res) => {
   res.status(404).json({ error: 'Route not found' });
 });
 
-// Global error handler
+// error handler
 app.use((err, req, res, next) => {
   console.error(err);
   res
