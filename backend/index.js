@@ -1,28 +1,37 @@
+import 'express-async-errors';       // auto-catch async errors
 import express from 'express';
 import cors from 'cors';
-import mongoose from 'mongoose';
-
 import dotenv from 'dotenv';
-import connectDB from './config/db.js'; // Fixed import syntax
+import connectDB from './config/db.js';
 
-const app = express();
-dotenv.config();
-connectDB();
-app.use(cors());
-app.use(express.json());
-
-// Fixed require to use import syntax
 import authRoutes from './routes/authRoutes.js';
 import wishlistRoutes from './routes/wishlistRoutes.js';
 
+dotenv.config();
+connectDB();
+
+const app = express();
+app.use(cors({ origin: 'http://localhost:5173' }));
+app.use(express.json());
+
+// Mount routes
 app.use('/api/auth', authRoutes);
 app.use('/api/wishlist', wishlistRoutes);
 
+// 404 handler
+app.use((req, res) => {
+  res.status(404).json({ error: 'Route not found' });
+});
+
+// Global error handler
+app.use((err, req, res, next) => {
+  console.error(err);
+  res
+    .status(err.statusCode || 500)
+    .json({ error: err.message || 'Internal Server Error' });
+});
+
 const PORT = process.env.PORT || 5000;
-
 app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-    // console.log(`MongoDB Connected: ${process.env.MONGODB_URI}`.cyan.underline);
-})
-
-
+  console.log(`Server running on port ${PORT}`);
+});
